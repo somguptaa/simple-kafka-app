@@ -22,6 +22,10 @@ The project is intended for learning and understanding core Apache Kafka concept
 - Apache Kafka
 - Maven
 
+### Starters
+
+- Apache Kafka for Spring 
+
 ## Running the Producer
 
 Run as SpringBoot Apllication 

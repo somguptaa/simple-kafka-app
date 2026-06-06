@@ -1,88 +1,257 @@
-# Simple Kafka App
+# Spring Boot Kafka
 
-A standalone Apache Kafka project demonstrating basic producer-consumer messaging. This repository contains two independent applications:
+This repository contains two Spring Boot applications demonstrating Apache Kafka messaging.
 
-- **Producer Application** – Publishes messages to a Kafka topic.
-- **Consumer Application** – Consumes and processes messages from the Kafka topic.
+## Projects
 
-The project is intended for learning and understanding core Apache Kafka concepts such as topics, producers, consumers, offsets, and message flow.
+### 1. Kafka Producer Application
 
-## Architecture
+Publishes messages to a Kafka topic using `KafkaTemplate`.
+
+**Features**
+
+* Console-based message input
+* Sends messages to Kafka Topic
+* Spring Kafka Producer Configuration
+* Java 21 + Spring Boot
+
+### 2. Kafka Consumer Application
+
+Consumes messages from Kafka using `@KafkaListener`.
+
+**Features**
+
+* Listens to Kafka Topic
+* Receives messages in real-time
+* Consumer Group Support
+* Spring Kafka Consumer Configuration
+
+---
+
+# Architecture
 
 ```text
-+-------------------+          +-------------------+          +-------------------+
-| Producer App      | -------> | Kafka Topic       | -------> | Consumer App      |
-+-------------------+          +-------------------+          +-------------------+
++-------------------+
+| Kafka Producer    |
+| Spring Boot App   |
++-------------------+
+          |
+          v
++-------------------+
+| Kafka Topic       |
+| topickafka        |
++-------------------+
+          |
+          v
++-------------------+
+| Kafka Consumer    |
+| Spring Boot App   |
++-------------------+
 ```
 
-## Prerequisites
+---
 
-- Java 21
-- Spring Boot 3.x
-- Apache Kafka
-- Maven
+# Technology Stack
 
-### Starters
+* Java 21
+* Spring Boot 4.x
+* Apache Kafka 4.3.0
+* Spring Kafka
+* Maven
 
-- Apache Kafka for Spring 
+---
 
-## Running the Producer
+# Kafka Setup
 
-Run as SpringBoot Apllication 
+## Generate Cluster ID
 
-The producer publishes messages to the configured Kafka topic.
-
-## Running the Consumer
-
-Run as SpringBoot Apllication 
-
-The consumer subscribes to the topic and processes incoming messages.
-
-## Example Flow
-
-1. Producer sends a message to Kafka.
-2. Kafka stores the message in the topic.
-3. Consumer reads the message from the topic.
-4. Consumer processes and logs the received message.
+```cmd
+bin\windows\kafka-storage.bat random-uuid
+```
 
 Example:
 
 ```text
-Producer -> "Hello Kafka"
-Kafka Topic -> sample-topic
-Consumer -> Received: Hello Kafka
+TfjVypuCRc20LbsSONWLWQ
 ```
 
-## Concepts Covered
+---
 
-- Kafka Topics
-- Kafka Producers
-- Kafka Consumers
-- Consumer Groups
-- Message Serialization
-- Offset Management
-- Event-Driven Communication
+## Format Controller Storage
 
-## Learning Goals
+```cmd
+bin\windows\kafka-storage.bat format --cluster-id TfjVypuCRc20LbsSONWLWQ --config config\controller.properties --standalone
+```
 
-This project was created as part of a Kafka learning journey to gain hands-on experience with:
+---
 
-- Publishing messages using Kafka producers
-- Consuming messages using Kafka consumers
-- Understanding Kafka's messaging architecture
-- Exploring asynchronous communication patterns
+## Format Broker Storage
 
-## Future Enhancements
+```cmd
+bin\windows\kafka-storage.bat format --cluster-id TfjVypuCRc20LbsSONWLWQ --config config\broker.properties
+```
 
-- Multiple consumers and consumer groups
-- Message partitioning
-- Message keys
-- Retry mechanisms
-- Dead Letter Topics (DLT)
-- Kafka Streams
-- Spring Kafka integration
-- Docker Compose setup
+---
 
-## License
+## Start Controller
 
-This project is intended for educational and learning purposes.
+```cmd
+bin\windows\kafka-server-start.bat config\controller.properties
+```
+
+---
+
+## Start Broker
+
+```cmd
+bin\windows\kafka-server-start.bat config\broker.properties
+```
+
+---
+
+## Verify Broker
+
+```cmd
+netstat -ano | findstr :9092
+```
+
+Expected:
+
+```text
+LISTENING
+```
+
+---
+
+# Topic Commands
+
+## Create Topic
+
+```cmd
+bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --create --topic topickafka --partitions 1 --replication-factor 1
+```
+
+## List Topics
+
+```cmd
+bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --list
+```
+
+## Describe Topic
+
+```cmd
+bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --describe --topic topickafka
+```
+
+## Delete Topic
+
+```cmd
+bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --delete --topic topickafka
+```
+
+---
+
+# Run Applications
+
+## Start Consumer Application
+
+```cmd
+mvn spring-boot:run
+```
+
+Consumer waits for incoming messages.
+
+---
+
+## Start Producer Application
+
+```cmd
+mvn spring-boot:run
+```
+
+Enter messages:
+
+```text
+Hello Kafka
+Spring Boot
+Testing
+end
+```
+
+---
+
+# Sample Output
+
+## Producer
+
+```text
+Enter message::
+Hello Kafka
+
+Enter message::
+Spring Boot Kafka
+
+Enter message::
+end
+```
+
+## Consumer
+
+```text
+Received Message :: Hello Kafka
+
+Received Message :: Spring Boot Kafka
+
+Received Message :: end
+```
+
+---
+
+# Kafka Console Tools
+
+## Console Producer
+
+```cmd
+bin\windows\kafka-console-producer.bat --bootstrap-server localhost:9092 --topic topickafka
+```
+
+## Console Consumer
+
+```cmd
+bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic topickafka --from-beginning
+```
+
+---
+
+# Repository Structure
+
+```text
+spring-boot-kafka-examples
+│
+├── kafka-producer-app
+│   └── Spring Boot Producer
+│
+├── kafka-consumer-app
+│   └── Spring Boot Consumer
+│
+└── README.md
+```
+
+---
+
+# Learning Objectives
+
+* Apache Kafka Basics
+* Kafka Topics
+* Kafka Producer API
+* Kafka Consumer API
+* Spring Kafka Integration
+* KafkaTemplate Usage
+* @KafkaListener Usage
+* Message Publishing and Consumption
+
+---
+
+# Author
+
+Spring Boot + Apache Kafka learning project demonstrating Producer and Consumer communication using Kafka 4.3.0 and Java 21.
